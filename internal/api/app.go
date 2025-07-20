@@ -2,20 +2,20 @@ package api
 
 import (
 	"github.com/dsniels/email-service/internal/api/handler"
-	"github.com/dsniels/email-service/internal/events"
+	"github.com/dsniels/email-service/internal/queue"
 	"github.com/dsniels/email-service/internal/service"
 )
 
 type App struct {
 	H   *handler.EmailHandler
-	Rab *events.Rabbit
+	Rab *queue.Rabbit
 }
 
 func NewApp() (*App, error) {
 
 	svc := service.NewEmailSvc()
 	hdl := handler.NewEmailHandler(svc)
-	rabbit, err := events.NewRabbit()
+	rabbit, err := queue.NewRabbit()
 	if err != nil {
 		return nil, err
 	}

@@ -1,4 +1,4 @@
-package events
+package queue
 
 import (
 	"context"
@@ -8,8 +8,8 @@ import (
 )
 
 type Rabbit struct {
-	Conn *rb.Connection
-	Ch   *rb.Channel
+	conn *rb.Connection
+	ch   *rb.Channel
 }
 
 func (r *Rabbit) Publish(ctx context.Context, body interface{}) {
@@ -18,22 +18,23 @@ func (r *Rabbit) Publish(ctx context.Context, body interface{}) {
 
 func (r *Rabbit) StartConsuming(ctx context.Context, eventname string) {
 
-	err := r.Ch.ExchangeDeclare(eventname, rb.ExchangeFanout, true, false, false, false, nil)
+	defer r.ch.Close()
+	err := r.ch.ExchangeDeclare(eventname, rb.ExchangeFanout, true, false, false, false, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	queue, err := r.Ch.QueueDeclare("", false, false, true, false, nil)
+	queue, err := r.ch.QueueDeclare("", false, false, true, false, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	err = r.Ch.QueueBind(queue.Name, "", eventname, false, nil)
+	err = r.ch.QueueBind(queue.Name, "", eventname, false, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	msg, err := r.Ch.Consume(queue.Name, "", true, false, false, false, nil)
+	msg, err := r.ch.Consume(queue.Name, "", true, false, false, false, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -57,8 +58,8 @@ func NewRabbit() (*Rabbit, error) {
 		return nil, err
 	}
 	return &Rabbit{
-		Conn: conn,
-		Ch:   ch,
+		conn: conn,
+		ch:   ch,
 	}, nil
 
 }
