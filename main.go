@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
 	"net/http"
 
 	"github.com/dsniels/email-service/internal/api"
@@ -27,6 +28,7 @@ func main() {
 		Handler: router.RecoverMiddleware(api),
 		Addr:    *port,
 	}
+	log.Println("Server running on port: ", *port)
 	if err := server.ListenAndServe(); err != nil {
 		panic(err)
 	}

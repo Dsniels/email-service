@@ -15,8 +15,7 @@ type EmailSvc struct {
 }
 
 func (s *EmailSvc) SendEmail(msg *core.Message) error {
-
-	message := messsageBuilder(msg)
+	message := messageBuilder(msg)
 	err := smtp.SendMail(
 		s.opts.Addr,
 		*s.auth,
@@ -26,12 +25,14 @@ func (s *EmailSvc) SendEmail(msg *core.Message) error {
 	)
 	if err != nil {
 		log.Println(err)
+		return err
 	}
+	log.Println("Email Sent...")
 
 	return nil
 }
 
-func messsageBuilder(mail *core.Message) []byte {
+func messageBuilder(mail *core.Message) []byte {
 	var msg string
 	msg += fmt.Sprintf("To: %s\r\n", strings.Join(mail.To, ";"))
 	msg += fmt.Sprintf("Subject: %s\r\n", mail.Subject)

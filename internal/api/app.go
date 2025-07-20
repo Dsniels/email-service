@@ -15,7 +15,7 @@ func NewApp() (*App, error) {
 
 	svc := service.NewEmailSvc()
 	hdl := handler.NewEmailHandler(svc)
-	rabbit, err := queue.NewRabbit()
+	rabbit, err := queue.NewRabbit(svc)
 	if err != nil {
 		return nil, err
 	}

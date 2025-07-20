@@ -1,7 +1,6 @@
 package service
 
 import (
-	"log"
 	"net/smtp"
 	"os"
 )
@@ -23,7 +22,6 @@ func GetAuth() (*smtp.Auth, *SmtpOpts) {
 		Addr:     os.Getenv("HOST") + os.Getenv("PORT"),
 		Sender:   os.Getenv("SENDER"),
 	}
-	log.Println(s.Addr, s.Sender, s.Password, s.Host, s.Port)
 
 	auth := smtp.PlainAuth("", s.Email, s.Password, s.Host)
 
