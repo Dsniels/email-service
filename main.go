@@ -13,7 +13,7 @@ import (
 
 func main() {
 	godotenv.Load()
-	port := flag.String("port", ":3000", "the port")
+	port := flag.String("port", ":5000", "the port")
 	flag.Parse()
 
 	app, err := api.NewApp()

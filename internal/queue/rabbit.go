@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/dsniels/email-service/internal/core"
 	"github.com/dsniels/email-service/internal/service"
@@ -48,22 +49,24 @@ func (r *Rabbit) StartConsuming(ctx context.Context, eventname string) {
 		for d := range msg {
 			message := new(core.Message)
 			json.Unmarshal(d.Body, message)
-			if err := r.emailSvc.SendEmail(message); err!=nil{
+			if err := r.emailSvc.SendEmail(message); err != nil {
 				log.Println(err)
 			}
-			
+
 		}
 	}()
 	<-stop
 }
 
 func NewRabbit(svc *service.EmailSvc) (*Rabbit, error) {
-	conn, err := rb.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err := rb.Dial(os.Getenv("RABBIT_CONN"))
 	if err != nil {
+		log.Println("Connection: ", err)
 		return nil, err
 	}
 	ch, err := conn.Channel()
 	if err != nil {
+		log.Println("Chanel: ", err)
 		return nil, err
 	}
 	return &Rabbit{
